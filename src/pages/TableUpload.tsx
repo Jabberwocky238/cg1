@@ -55,10 +55,10 @@ export function TableUpload() {
         if (confirmed) {
             try {
                 // 先签名
-                const signedTx = await window.arweaveWallet.sign(tx);
-                console.log(signedTx);
+                // const signedTx = await window.arweaveWallet.sign(tx);
+                // console.log(signedTx);
                 // 再提交
-                let result = await window.arweaveWallet.dispatch(signedTx);
+                let result = await window.arweaveWallet.dispatch(tx);
                 console.log(result);
                 setData(JSON.stringify(result));
 

@@ -46,7 +46,11 @@ function UploadRow({ data }: { data: Upload[] }) {
                         <TableRow key={item.id}>
                             <TableCell>{item.id}</TableCell>
                             <TableCell>{item.uploader_wallet_pubkey}</TableCell>
-                            <TableCell className="text-right">{item.transaction_id}<a href={`https://arweave.net/${item.transaction_id}`} target="_blank" rel="noopener noreferrer">View</a></TableCell>
+                            <TableCell className="text-right">
+                                {item.transaction_id}
+                                <a href={`https://arweave.net/${item.transaction_id}`} target="_blank">View-Raw</a>
+                                <a href={`https://arweave.app/tx/${item.transaction_id}`} target="_blank">View-TX</a>
+                            </TableCell>
                             <TableCell>{item.page_id}</TableCell>
                             <TableCell>{item.meta_tags_json}</TableCell>
                             <TableCell className="text-right">{item.created_at}</TableCell>
