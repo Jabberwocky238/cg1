@@ -53,7 +53,15 @@ export function TableUpload() {
         console.log(activeAddress);
         alert(`Active public key: ${activeAddress}`);
 
-        const confirmed = confirm(`是否要提交`);
+        const info = `
+        reward:\n
+        ${fee}\n\n
+        data:\n
+        ${data}\n\n
+        tags:\n
+        ${tags.map((tag) => `${tag.name}: ${tag.value}`).join("\n")}
+        `
+        const confirmed = confirm(`是否要提交\n${info}`);
         if (confirmed) {
             try {
                 // 先签名
