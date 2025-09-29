@@ -19,6 +19,7 @@ export function TableUpload() {
     const [key, setKey] = useState<string>("");
     const [value, setValue] = useState<string>("");
     const [pageId, setPageId] = useState<string>("");
+    const [fee, setFee] = useState<string>("0");
     const { isWalletConnected } = useWalletContext();
 
     const handleAddTagWith = ({ name, value }: { name: string, value: string }) => {
@@ -42,6 +43,7 @@ export function TableUpload() {
     const handleSubmit = async () => {
         const tx = await arweave.createTransaction({
             data: data,
+            reward: fee,
         })
         tags.forEach((tag) => {
             tx.addTag(tag.name, tag.value);
@@ -92,12 +94,23 @@ export function TableUpload() {
                 <Button variant="primary" onClick={handleAddTag}>add tag</Button>
                 <Button variant="secondary" onClick={handleClearTags}>clear tags</Button>
             </div>
+            <div className="flex flex-wrap flex-row justify-center gap-2">
+                <Label htmlFor="fee">fee</Label>
+                <Input placeholder="Enter fee" value={fee} onChange={(e) => setFee(e.target.value)} id="fee" name="fee" type="number" />
+            </div>
             <div className="flex flex-wrap flex-col justify-center items-center gap-1 mt-4">
                 <div className="flex flex-wrap justify-center gap-6">
                     HELPER: Content-Type: text/html
                     <Button variant="secondary" onClick={() =>
                         handleAddTagWith({ name: "Content-Type", value: "text/html" })}>
                         add Content-Type: text/html
+                    </Button>
+                </div>
+                <div className="flex flex-wrap justify-center gap-6">
+                    HELPER: User-Agent: CG1
+                    <Button variant="secondary" onClick={() =>
+                        handleAddTagWith({ name: "User-Agent", value: "CG1" })}>
+                        add User-Agent: CG1
                     </Button>
                 </div>
                 <div className="flex flex-wrap justify-center gap-6">
