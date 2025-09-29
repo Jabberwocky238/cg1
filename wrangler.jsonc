@@ -1,6 +1,6 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "cg1",
+	"name": "arweave1",
 	"main": "worker/index.ts",
 	"compatibility_date": "2025-09-29",
 	"assets": { "not_found_handling": "single-page-application" },
