@@ -1,0 +1,17 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "cg1",
+	"main": "worker/index.ts",
+	"compatibility_date": "2025-09-29",
+	"assets": { "not_found_handling": "single-page-application" },
+	"observability": {
+		"enabled": true
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "cg1-db",
+			"database_id": "424fa452-380a-4ce4-b7a8-ac4548fd6fe4"
+		}
+	]
+}

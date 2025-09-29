@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas 贪吃蛇游戏</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #1e1e1e;
+            font-family: 'Inter', sans-serif;
+            color: #f0f0f0;
+            user-select: none;
+        }
+
+        .game-container {
+            background-color: #2c2c2c;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        h1 {
+            color: #00ff00;
+            margin-bottom: 10px;
+        }
+
+        #sd {
+            margin-bottom: 15px;
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        canvas {
+            border: 6px solid #00ff00;
+            background-color: #000000;
+            border-radius: 4px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+        }
+
+        .message-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(44, 44, 44, 0.95);
+            padding: 30px 40px;
+            border-radius: 12px;
+            border: 3px solid #ff4500;
+            box-shadow: 0 0 20px rgba(255, 69, 0, 0.7);
+            color: #fff;
+            font-size: 1.2em;
+            text-align: center;
+            z-index: 100;
+        }
+
+        .message-box button {
+            background-color: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        .message-box button:hover {
+            background-color: #00e000;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>经典贪吃蛇</h1>
+        <div id="sd">得分: 0</div>
+        <canvas id="C" width="400" height="400"></canvas>
+    </div>
+
+    <div id="M" class="message-box" style="display:none;">
+        <h2 id="mt">游戏结束</h2>
+        <p id="mm">你撞到了自己！</p>
+        <button id="R">重新开始</button>
+    </div>
+
+    <script>
+        (function() {
+            const C = document.getElementById('C');
+            const T = C.getContext('2d');
+            const SD = document.getElementById('sd');
+            const M = document.getElementById('M');
+            const MT = document.getElementById('mt');
+            const MM = document.getElementById('mm');
+            const R = document.getElementById('R');
+
+            const G = 20;
+            const TC = C.width / G;
+            let S = 133;
+            let I;
+
+            let s = 0;
+            let n = [{ x: 10, y: 10 }];
+            let x = 0;
+            let y = 0;
+            let f = {};
+            let d = false;
+            let o = true;
+
+            function i() {
+                o = false;
+                s = 0;
+                SD.textContent = `得分: 0`;
+                n = [{ x: 10, y: 10 }];
+                if (x === 0 && y === 0) {
+                    x = 1;
+                    y = 0;
+                }
+                d = false;
+                
+                M.style.display = 'none';
+
+                g();
+                
+                if (I) clearInterval(I);
+                I = setInterval(l, S);
+                w();
+            }
+
+            function g() {
+                function rand() {
+                    const px = Math.floor(Math.random() * TC);
+                    const py = Math.floor(Math.random() * TC);
+                    
+                    if (n.some(seg => seg.x === px && seg.y === py)) {
+                        return rand();
+                    }
+                    return { x: px, y: py };
+                }
+                
+                f = rand();
+            }
+
+            function r(x, y, color) {
+                T.fillStyle = color;
+                T.fillRect(x * G, y * G, G - 1, G - 1);
+            }
+
+            function w() {
+                T.fillStyle = '#000';
+                T.fillRect(0, 0, C.width, C.height);
+
+                r(f.x, f.y, '#ff4500'); 
+
+                n.forEach((seg, idx) => {
+                    const c = idx === 0 ? '#00ff00' : '#00cc00'; 
+                    r(seg.x, seg.y, c);
+                });
+            }
+
+            function c(h) {
+                for (let j = 1; j < n.length; j++) {
+                    if (h.x === n[j].x && h.y === n[j].y) return true;
+                }
+                return false;
+            }
+
+            function h(reason) {
+                o = true;
+                clearInterval(I);
+                
+                MT.textContent = "游戏结束！";
+                MM.innerHTML = `<p>原因: ${reason}</p><p>最终得分: ${s}</p>`;
+                M.style.display = 'block';
+            }
+
+            function u() {
+                if (o) return;
+
+                d = false;
+
+                const nh = { x: n[0].x + x, y: n[0].y + y }; // 修复: 将蛇头对象重命名为 nh
+
+                if (nh.x < 0 || nh.x >= TC || nh.y < 0 || nh.y >= TC) {
+                    h("撞到墙壁"); // 正确调用 game over 函数 h
+                    return;
+                }
+
+                if (c(nh)) {
+                    h("咬到自己"); // 正确调用 game over 函数 h
+                    return;
+                }
+
+                n.unshift(nh);
+
+                if (nh.x === f.x && nh.y === f.y) {
+                    s++;
+                    SD.textContent = `得分: ${s}`;
+                    S = Math.max(100, S - 1);
+                    clearInterval(I);
+                    I = setInterval(l, S);
+                    g();
+                } else {
+                    n.pop();
+                }
+            }
+
+            document.addEventListener('keydown', e);
+
+            function e(evt) {
+                const k = evt.key;
+
+                if (o) {
+                    if (['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown'].includes(k)) {
+                        if (x === 0 && y === 0) {
+                            if (k === 'ArrowLeft') { x = -1; y = 0; }
+                            else if (k === 'ArrowUp') { x = 0; y = -1; }
+                            else if (k === 'ArrowRight') { x = 1; y = 0; }
+                            else if (k === 'ArrowDown') { x = 0; y = 1; }
+                            i(); 
+                            return;
+                        }
+                    }
+                    return;
+                }
+
+                if (d) return;
+                d = true;
+
+                const u = y === -1;
+                const D = y === 1;
+                const R_dir = x === 1;
+                const L = x === -1;
+
+                if (k === 'ArrowLeft' && !R_dir) {
+                    x = -1; y = 0;
+                } else if (k === 'ArrowUp' && !D) {
+                    x = 0; y = -1;
+                } else if (k === 'ArrowRight' && !L) {
+                    x = 1; y = 0;
+                } else if (k === 'ArrowDown' && !u) {
+                    x = 0; y = 1;
+                }
+            }
+            
+            function l() {
+                u();
+                w();
+            }
+
+            R.addEventListener('click', i);
+
+            M.style.display = 'block';
+            MT.textContent = "欢迎来到贪吃蛇";
+            MM.innerHTML = `<p>请使用 **方向键** (↑↓←→) 控制蛇的移动。</p><p>目标：吃掉红色的食物，避免撞到墙壁或自己的身体。</p>`;
+            R.textContent = "开始游戏";
+
+            w();
+        })();
+    </script>
+
+</body>
+</html>
